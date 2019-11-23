@@ -1,0 +1,36 @@
+m_list = [
+    [1, 9, 8, 5, 6, 7, 4, 3, 2],
+    [1, 2, 3, 4, 5, 6, 7, 8, 9],
+    [9, 8, 7, 6, 5, 4, 3, 2, 1]
+]
+nums = m_list[0]
+length = len(nums)
+print(nums)
+
+count_iter = 0
+count_swap = 0
+
+for i in range(length // 2):  # 一次固定2个数，减半
+    maxindex = i
+    minindex = -i - 1
+    minorigin = minindex  # 记住-i - 1
+
+    for j in range(i + 1, length - i):
+        count_iter += 1
+        if nums[maxindex] < nums[j]:
+            maxindex = j
+        if nums[minindex] > nums[-j - 1]:
+            minindex = -j - 1  # 负索引
+    # print(i, maxindex, -i-1, minindex)
+    if maxindex != i:
+        nums[maxindex], nums[i] = nums[i], nums[maxindex]
+        count_swap += 1
+        if i == minindex or i == length + minindex:  # 最小值位置被交换过，要调整
+            minindex = maxindex - length  # 调整为负索引
+
+    if minindex != minorigin:  # 比较负索引
+        nums[minindex], nums[minorigin] = nums[minorigin], nums[minindex]
+        count_swap += 1
+
+print(nums)
+print(count_iter, count_swap)
