@@ -1,0 +1,87 @@
+# 堆排序的空间复杂度为O(n),时间复杂度为O(n*logn)，效率高
+import math
+
+
+def print_tree(array, unit_width=2):
+    """
+      i 前空格       元素间
+    1 3 7=2**3-1  0 2*7+1 2*前空格数+1
+    2 2 3=2**2-1  7=2*3+1
+    3 1 1=2**1-1  3=2*1+1
+    4 0 0=2**0-1  1=2*0+1
+    """
+    length = len(array)
+    index = 1
+    # 因为使用时前面补0了，不然应该是math.ceil(math.log2(len(array)+1))
+    depth = math.ceil(math.log2(length))  # 4
+    space = ' ' * unit_width
+    for i in range(depth - 1, -1, -1):
+        pre = 2 ** i - 1
+        print(pre * space, end='')  # 前置空格
+        offset = 2 ** (depth - i - 1)
+        line = array[index:index + offset]  # 取数字
+        interval = (2 * pre + 1) * space  # 间隔的空格
+        print(interval.join(map(lambda x: "{:2}".format(x), line)))
+
+        index += offset
+
+
+# Heap Sort
+# 为了和编码对应，增加一个无用的0在首位
+origin = [0, 30, 20, 80, 40, 50, 10, 60, 70, 90]
+
+total = len(origin) - 1  # 初始待排序元素个数，即n
+print_tree(origin)
+print("=" * 50)
+
+# 调整堆（单个结点的调整）
+def heap_adjust(n, i, array: list):
+    """
+    调整当前结点(核心算法)
+
+    调整的结点的起点在n//2，保证所有调整的结点都有孩子结点
+    :param n: 待比较数个数
+    :param i: 当前结点的下标
+    :param array: 待排序数据
+    先比较左右孩子哪个结点的值大，第二步再将父节点与较大的那个子结点的值做交换
+    """
+    while 2 * i <= n:
+        # 孩子结点判断 2i为左孩子，2i+1为右孩子
+        lchild_index = 2 * i
+        max_child_index = lchild_index  # n=2i 先假设左孩子的索引为最大值的索引（左孩子是最大值）
+        if 2*i < n and array[lchild_index + 1] > array[lchild_index]:
+            # 2*i < n说明还有右孩子,并且右孩子的值大于左孩子的值，才会将右孩子的值对应的索引设为最大值的索引
+            max_child_index = lchild_index + 1  # n=2i+1
+
+        # 和子树的根结点比较
+        if array[max_child_index] > array[i]:
+            array[i], array[max_child_index] = array[max_child_index], array[i]
+            i = max_child_index  # 被交换后，需要判断是否还需要调整
+        else:  # 否则，说明目前子树根节点就是最大的，当前结点不用调整，直至结束
+            break
+
+
+# 构建大顶堆、大根堆
+def max_heap(total, array: list):
+    for i in range(total // 2, 0, -1):
+        heap_adjust(total, i, array)
+    return array
+
+print_tree(max_heap(total, origin))
+print("=" * 50)
+
+
+# 排序
+def sort(total, array: list):
+    while total > 1:
+        array[1], array[total] = array[total], array[1]  # 堆顶和最后一个结点交换
+        total -= 1
+        if total == 2 and array[total] >= array[total - 1]:
+            # 列表除了0之外，只剩两个数，并且两个数一样，就不用比较了
+            break
+        heap_adjust(total, 1, array)
+    return array
+
+
+print_tree(sort(total, origin))
+print(origin)
