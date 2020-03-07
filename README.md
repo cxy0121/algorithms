@@ -1,2 +1,2 @@
 # algorithms
-列出了常见的算法实现
+用Python实现了常见的排序算法
